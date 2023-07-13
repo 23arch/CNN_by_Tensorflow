@@ -1,0 +1,60 @@
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Definiere die Pfade zu den Trainings- und Testdatensätzen
+train_data_dir = 'C:/Pic/Train/'
+test_data_dir = 'C:/Pic/Test/'
+
+# Definiere die Bildabmessungen und andere Parameter
+image_height = 100
+image_width = 100
+batch_size = 32
+num_classes = 2
+
+# Erstelle den ImageDataGenerator für den Trainingsdatensatz
+train_datagen = ImageDataGenerator(rescale=1./255)
+
+# Lade den Trainingsdatensatz
+train_generator = train_datagen.flow_from_directory(
+    train_data_dir,
+    target_size=(image_height, image_width),
+    batch_size=batch_size,
+    class_mode='categorical')
+
+# Erstelle den ImageDataGenerator für den Testdatensatz
+test_datagen = ImageDataGenerator(rescale=1./255)
+
+# Lade den Testdatensatz
+test_generator = test_datagen.flow_from_directory(
+    test_data_dir,
+    target_size=(image_height, image_width),
+    batch_size=batch_size,
+    class_mode='categorical')
+
+# Definiere das CNN-Modell
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(image_height, image_width, 3)),
+    tf.keras.layers.MaxPooling2D((2, 2)),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D((2, 2)),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dense(num_classes, activation='softmax')
+])
+
+# Kompiliere das Modell
+model.compile(optimizer='adam',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Zusammenfassung des Modells
+model.summary()
+
+# Trainiere das Modell
+model.fit(train_generator, epochs=10)
+
+# Evaluierung des Modells
+loss, accuracy = model.evaluate(test_generator)
+print('Test Loss:', loss)
+print('Test Accuracy:', accuracy)
