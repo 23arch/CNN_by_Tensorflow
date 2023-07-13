@@ -1,0 +1,45 @@
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from PIL import Image
+import scipy
+
+
+# Definiere den Pfad zum Trainingsdatensatz
+train_data_dir = 'C:/Pic/Train/'
+test_data_dir = "C:/Pic/Test/"
+
+# Definiere die Bildabmessungen und andere Parameter
+image_height = 100
+image_width = 100
+batch_size = 32
+num_classes = 2
+
+
+# Erstelle den ImageDataGenerator für den Trainingsdatensatz
+train_datagen = ImageDataGenerator(rescale=1./255)
+
+# Lade den Trainingsdatensatz
+train_generator = train_datagen.flow_from_directory(
+    train_data_dir,
+    target_size=(image_height, image_width),
+    batch_size=batch_size,
+    class_mode='categorical')
+
+# Definiere das CNN-Modell
+model = tf.keras.models.Sequential([
+    # Definiere die Schichten des Modells
+    # ...
+])
+
+# Kompiliere das Modell
+model.compile(optimizer='adam',
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Trainiere das Modell
+model.fit(train_generator, epochs=10)
+
+# Weitere Schritte für Evaluierung oder Vorhersage...
+model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
+
+loss, accuracy = model.evaluate(test_generator)
